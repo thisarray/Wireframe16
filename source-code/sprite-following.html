@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sprite-following</title>
+  <script src="../../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+<section id="imageLoader" class="hidden">
+  <img class="hidden" src="images/powerup.png" alt="powerup">
+  <img class="hidden" src="images/spaceship.png" alt="spaceship">
+</section>
+
+<main>
+<h1>sprite-following</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/16">Source Code: Gradius' ship-following Options, pages 40-41, by Rik Cross</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+# set screen width and height
+WIDTH = 800
+HEIGHT = 800
+
+# create spaceship and a list of 3 powerups
+spaceship = Actor(&#x27;spaceship&#x27;,pos=(400,400))
+spaceship.speed = 4
+powerups = [Actor(&#x27;powerup&#x27;) for p in range(3)]
+
+# create a list of previous positions
+# initially containing values to the left of the spaceship
+previouspositions = [(spaceship.x - i*spaceship.speed,spaceship.y) for i in range(100)]
+
+def update():
+
+    global previouspositions
+
+    # store spaceship previous position
+    previousposition = (spaceship.x,spaceship.y)
+
+    # use arrow keys to move the spaceship
+    if keyboard.up:
+        spaceship.y -= spaceship.speed
+    if keyboard.down:
+        spaceship.y += spaceship.speed
+    if keyboard.left:
+        spaceship.x -= spaceship.speed
+    if keyboard.right:
+        spaceship.x += spaceship.speed
+
+    # add new position to list if the spaceship has moved
+    # and ensure the list contains at most 100 positions
+    if previousposition != spaceship.pos:
+        previouspositions = [(spaceship.x,spaceship.y)] + previouspositions[:99]
+
+    # set the new position of each powerup
+    for i,p in enumerate(powerups):
+        newposition = previouspositions[(i+1)*20]
+        p.pos = (newposition[0],newposition[1])
+
+def draw():
+    screen.clear()
+    spaceship.draw()
+    for p in powerups:
+        p.draw()
+</code></pre>
+</main>
+
+<script>
+// set screen width and height
+WIDTH = 800;
+HEIGHT = 800;
+
+var spaceship, powerups, previouspositions;
+
+function reset() {
+  // create spaceship and a list of 3 powerups
+  spaceship = new Actor('spaceship');
+  spaceship.pos = [400, 400];
+  spaceship.speed = 4;
+
+  powerups = [];
+  for (let p = 0; p < 3; p++) {
+    powerups.push(new Actor('powerup'));
+  }
+
+  // create a list of previous positions
+  // initially containing values to the left of the spaceship
+  previouspositions = [];
+  let [x=0, y=0] = spaceship.pos;
+  for (let i = 0; i < 100; i++) {
+    previouspositions.push([x - (i * spaceship.speed), y]);
+  }
+}
+
+function update() {
+  // store spaceship previous position
+  let previousposition = spaceship.pos,
+      i = 0;
+
+  // use arrow keys to move the spaceship
+  if (keyboard[keys.UP]) {
+    spaceship.posy -= spaceship.speed;
+  }
+  if (keyboard[keys.DOWN]) {
+    spaceship.posy += spaceship.speed;
+  }
+  if (keyboard[keys.LEFT]) {
+    spaceship.posx -= spaceship.speed;
+  }
+  if (keyboard[keys.RIGHT]) {
+    spaceship.posx += spaceship.speed;
+  }
+
+  // add new position to list if the spaceship has moved
+  // and ensure the list contains at most 100 positions
+  if ((previousposition[0] != spaceship.posx) ||
+      (previousposition[1] != spaceship.posy)) {
+    previouspositions.unshift(spaceship.pos);
+    while (previouspositions.length > 100) {
+      previouspositions.pop();
+    }
+  }
+
+  // set the new position of each powerup
+  for (let p of powerups) {
+    let newposition = previouspositions[(i+1)*20];
+    p.pos = newposition;
+    i++;
+  }
+}
+
+function draw() {
+  screen.clear();
+  spaceship.draw();
+  for (let p of powerups) {
+    p.draw();
+  }
+}
+
+window.addEventListener('load', (event) => {
+  images.LOAD('#imageLoader img');
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
