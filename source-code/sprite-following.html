@@ -22,8 +22,8 @@ body {
 
 <body>
 <section id="imageLoader" class="hidden">
-  <img class="hidden" src="images/powerup.png" alt="powerup">
-  <img class="hidden" src="images/spaceship.png" alt="spaceship">
+  <img class="hidden" src="images/powerup.png" alt="powerup" data-name="powerup">
+  <img class="hidden" src="images/spaceship.png" alt="spaceship" data-name="spaceship">
 </section>
 
 <main>
@@ -115,9 +115,8 @@ function reset() {
   // create a list of previous positions
   // initially containing values to the left of the spaceship
   previouspositions = [];
-  let [x=0, y=0] = spaceship.pos;
   for (let i = 0; i < 100; i++) {
-    previouspositions.push([x - (i * spaceship.speed), y]);
+    previouspositions.push([spaceship.posx - (i * spaceship.speed), spaceship.posy]);
   }
 }
 
